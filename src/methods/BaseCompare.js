@@ -126,12 +126,16 @@ export default class BaseCompare {
     return path.join(runtimeConfigPath, `${name}-${suffix}.json`);
   }
 
-  createResultReport(misMatchPercentage, isWithinMisMatchTolerance, isSameDimensions) {
+  createResultReport(resultResport) {
+    const {
+      misMatchPercentage, isWithinMisMatchTolerance, isSameDimensions, referenceExists
+    } = resultResport;
     return {
       misMatchPercentage,
-      isWithinMisMatchTolerance,
+      isExactSameImage: (misMatchPercentage === 0 && isSameDimensions),
+      isNewScreenshot: !referenceExists,
       isSameDimensions,
-      isExactSameImage: misMatchPercentage === 0
+      isWithinMisMatchTolerance: (isWithinMisMatchTolerance && isSameDimensions),
     };
   }
 

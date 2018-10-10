@@ -15,8 +15,6 @@ $ npm install wdio-visual-regression-service --save-dev
 
 Instructions on how to install `WebdriverIO` can be found [here.](http://webdriver.io/guide/getstarted/install.html)
 
-An example repository using the wdio-visual-regression service can be found [here.](https://github.com/zinserjan/webdriverio-example)
-
 ## Configuration
 Setup wdio-visual-regression-service by adding `visual-regression` to the service section of your WebdriverIO config and define your desired comparison strategy in `visualRegression`.
 
@@ -87,7 +85,7 @@ You can pass the following options to it's constructor as object:
 pass in a function that returns the filename for the reference screenshot. Function receives a *context* object as first parameter with all relevant information about the command.
 
 * **screenshotName** `Function` <br>
-pass in a function that returns the filename for the current screenshot. Function receives a *context* object as first parameter with all relevant information about the command.
+pass in a function that returns the filename for the latest screenshot. Function receives a *context* object as first parameter with all relevant information about the command.
 
 * **diffName** `Function` <br>
 pass in a function that returns the filename for the diff screenshot. Function receives a *context* object as first parameter with all relevant information about the command.
@@ -107,69 +105,6 @@ You can pass the following options to it's constructor as object:
 
 * **screenshotName** `Function` <br>
 pass in a function that returns the filename for the current screenshot. Function receives a *context* object as first parameter with all relevant information about the command.
-
-#### VisualRegressionCompare.Spectre
-This method is used for uploading screenshots to the web application [Spectre](https://github.com/wearefriday/spectre).
-Spectre is a UI for visual regression testing. It stores the screenshots and compares them which is quite useful for Continuous Integration.
-
-You can pass the following options to it's constructor as object:
-
-* **url** `String` <br>
-pass in a spectre webservice url.
-
-* **project** `String` <br>
-pass in a name for your project.
-
-* **suite** `String` <br>
-pass in a name for your testsuite. One project can contain several suites.
-
-* **test** `Function` <br>
-pass in a function that returns the test name for the screenshot. Function receives a *context* object as first parameter with all relevant information about the command.
-
-* **browser** `Function` <br>
-pass in a function that returns the browser for the screenshot. Function receives a *context* object as first parameter with all relevant information about the command.
-
-* **size** `Function` <br>
-pass in a function that returns the size for the screenshot. Function receives a *context* object as first parameter with all relevant information about the command.
-
-* **fuzzLevel** `Number`  ( default: 30 ) <br>
-number between 0 and 100 that defines the fuzz factor of Spectre's image comparison method. For more details please have a look at [Spectre documentation](https://github.com/wearefriday/spectre).
-
-**Example**
-```js
-// wdio.conf.js
-
-var path = require('path');
-var VisualRegressionCompare = require('wdio-visual-regression-service/compare');
-
-exports.config = {
-  // ...
-  services: [
-    'visual-regression',
-  ],
-  visualRegression: {
-    compare: new VisualRegressionCompare.Spectre({
-      url: 'http://localhost:3000',
-      project: 'my project',
-      suite: 'my test suite',
-      test: function getTest(context) {
-        return context.test.title;
-      },
-      browser: function getBrowser(context) {
-        return context.browser.name;
-      },
-      size: function getSize(context) {
-        return context.meta.viewport != null ? context.meta.viewport.width : context.meta.orientation;
-      },
-      fuzzLevel: 30
-    }),
-    viewportChangePause: 300,
-    viewports: [{ width: 320, height: 480 }, { width: 480, height: 320 }, { width: 1024, height: 768 }],
-    orientations: ['landscape', 'portrait'],
-  },
-  // ...
-};
-```
 
 ## Usage
 wdio-visual-regression-service enhances an WebdriverIO instance with the following commands:
@@ -213,9 +148,3 @@ available:
 ### License
 
 MIT
-
-
-[build-badge]: https://travis-ci.org/zinserjan/wdio-visual-regression-service.svg?branch=master
-[build]: https://travis-ci.org/zinserjan/wdio-visual-regression-service
-[npm-badge]: https://img.shields.io/npm/v/wdio-visual-regression-service.svg?style=flat-square
-[npm]: https://www.npmjs.org/package/wdio-visual-regression-service

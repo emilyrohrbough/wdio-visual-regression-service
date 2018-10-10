@@ -3,17 +3,12 @@ import { parse as parsePlatform } from 'platform';
 import { makeElementScreenshot, makeDocumentScreenshot, makeViewportScreenshot } from 'wdio-screenshot';
 
 import getUserAgent from './scripts/getUserAgent';
-import { mapViewports, mapOrientations } from './modules/mapViewports';
-
+import { mapViewports, mapOrientations } from './modules/resolutionMapUtils';
 
 export default class VisualRegressionLauncher {
-
   constructor() {
     this.currentSuite = null;
     this.currentTest = null;
-    this.currentFeature = null;
-    this.currentScenario = null;
-    this.currentStep = null;
   }
 
   /**
@@ -93,55 +88,6 @@ export default class VisualRegressionLauncher {
   afterTest(test) {
     this.currentTest = null;
   }
-
-  /**
-   * Function to be executed before a feature starts in Cucumber.
-   * @param  {Object} feature feature details
-   */
-  beforeFeature(feature) {
-    this.currentFeature = feature;
-  }
-
-  /**
-   * Function to be executed after a feature ends in Cucumber.
-   * @param  {Object} feature feature details
-   */
-  afterFeature(feature) {
-    this.currentFeature = null;
-  }
-
-  /**
-   * Function to be executed before a scenario starts in Cucumber.
-   * @param  {Object} scenario scenario details
-   */
-  beforeScenario(scenario) {
-    this.currentScenario = scenario;
-  }
-
-  /**
-   * Function to be executed after a scenario ends in Cucumber.
-   * @param  {Object} scenario scenario details
-   */
-  afterScenario(scenario) {
-    this.currentScenario = null;
-  }
-
-  /**
-   * Function to be executed before a step starts in Cucumber.
-   * @param  {Object} step step details
-   */
-  beforeStep(step) {
-    this.currentStep = step;
-  }
-
-  /**
-   * Function to be executed after a step ends in Cucumber.
-   * @param  {Object} stepResult stepResult details
-   */
-  afterStep(stepResult) {
-    this.currentStep = null;
-  }
-
 
   /**
    * Gets executed after all tests are done. You still have access to all global
@@ -252,13 +198,8 @@ export default class VisualRegressionLauncher {
 
   getTestDetails() {
     return _.pickBy({
-     // mocha
      suite: this.currentSuite,
      test: this.currentTest,
-     // cucumber
-     feature: this.currentFeature,
-     scenario: this.currentScenario,
-     step: this.currentStep,
     }, _.identity);
   }
 }

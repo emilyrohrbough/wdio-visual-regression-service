@@ -2,11 +2,11 @@ require("babel-register");
 
 var path = require('path');
 
-var compareMethod = require('../helper/compareMethod');
+var compareMethod = require('./test/helper/compareMethod');
 
 exports.config = {
   specs: [
-    path.join(__dirname, '*.test.js')
+    path.join(process.cwd(), 'test', 'wdio', '*.test.js')
   ],
   capabilities: [
     {
@@ -34,7 +34,7 @@ exports.config = {
   },
   services: [
     'selenium-standalone',
-    require('../../src')
+    require('./lib')
   ],
   visualRegression: {
     compare: compareMethod,
