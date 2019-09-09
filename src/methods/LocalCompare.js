@@ -2,7 +2,6 @@ import fs from 'fs-extra';
 import resemble from 'node-resemble-js';
 import BaseCompare from './BaseCompare';
 import debug from 'debug';
-import _ from 'lodash';
 
 const log = debug('wdio-visual-regression-service:LocalCompare');
 
@@ -10,16 +9,16 @@ export default class LocalCompare extends BaseCompare {
 
   constructor(options = {}) {
     super();
-    this.getScreenshotFile = options.screenshotName;
-    this.getReferencefile = options.referenceName;
-    this.getDiffFile = options.diffName;
-    this.misMatchTolerance = _.get(options, 'misMatchTolerance', 0.01);
-    this.ignoreComparison = _.get(options, 'ignoreComparison', 'nothing');
+    this.getScreenshotName = options.screenshotName;
+    this.getReferenceName = options.referenceName;
+    this.getDiffName = options.diffName;
+    this.misMatchTolerance = options.misMatchTolerance || 0.01;
+    this.ignoreComparison = options.ignoreComparison || 'nothing';
   }
 
   async processScreenshot(context, base64Screenshot) {
-    const screenshotPath = this.getScreenshotFile(context);
-    const referencePath = this.getReferencefile(context);
+    const screenshotPath = this.getScreenshotName(context);
+    const referencePath = this.getReferenceName(context);
 
     await fs.outputFile(screenshotPath, base64Screenshot, 'base64');
 
@@ -28,17 +27,16 @@ export default class LocalCompare extends BaseCompare {
     if (referenceExists) {
       log('reference exists, compare it with the taken now');
       const captured = new Buffer(base64Screenshot, 'base64');
-      const ignoreComparison = _.get(context, 'options.ignoreComparison', this.ignoreComparison);
+      const ignoreComparison = context.ignoreComparison || this.ignoreComparison;
 
       const compareData = await this.compareImages(referencePath, captured, ignoreComparison);
 
       const { isSameDimensions } = compareData;
       const misMatchPercentage = Number(compareData.misMatchPercentage);
-      const misMatchTolerance = _.get(context, 'options.misMatchTolerance', this.misMatchTolerance);
-
-      const diffPath = this.getDiffFile(context);
-
+      const misMatchTolerance = context.misMatchTolerance || this.misMatchTolerance;
       const isWithinMisMatchTolerance = misMatchPercentage < misMatchTolerance;
+
+      const diffPath = this.getDiffName(context);
 
       if (isSameDimensions && isWithinMisMatchTolerance) {
         log(`Image is within tolerance or the same`);
@@ -82,7 +80,6 @@ export default class LocalCompare extends BaseCompare {
     });
   }
 
-
   /**
    * Writes provided diff by resemble as png
    * @param  {Stream} png node-png file Stream.
@@ -106,6 +103,4 @@ export default class LocalCompare extends BaseCompare {
       png.on('error', (err) => reject(err));
     });
   }
-
-
 }

@@ -98,14 +98,6 @@ pass in a string with value of `nothing` , `colors` or `antialiasing` to adjust 
 
 For an example of generating screenshot filesnames dependent on the current test name, have a look at the sample code of [Configuration](#configuration).
 
-#### VisualRegressionCompare.SaveScreenshot
-This method is a stripped variant of `VisualRegressionCompare.LocalCompare` to capture only screenshots. This is quite useful when you just want to create reference screenshots and overwrite the previous one without diffing.
-
-You can pass the following options to it's constructor as object:
-
-* **screenshotName** `Function` <br>
-pass in a function that returns the filename for the current screenshot. Function receives a *context* object as first parameter with all relevant information about the command.
-
 ## Usage
 wdio-visual-regression-service enhances an WebdriverIO instance with the following commands:
 * `browser.checkViewport([{options}]);`
@@ -136,9 +128,6 @@ available:
 * **misMatchTolerance** `Number` <br>
     Overrides the global *misMatchTolerance* value for this command. Pass in a number between 0 and 100 that defines the degree of mismatch to consider two images as identical.
 
-* **fuzzLevel** `Number` <br>
-    Overrides the global *fuzzLevel* value for this command. Pass in a number between 0 and 100 that defines the fuzz factor of Spectre's image comparison method.
-
 * **ignoreComparison** `String` <br>
     Overrides the global *ignoreComparison* value for this command. Pass in a string with value of `nothing` , `colors` or `antialiasing` to adjust the comparison method.
 
@@ -147,4 +136,4 @@ available:
 
 ### License
 
-MIT
+Apache

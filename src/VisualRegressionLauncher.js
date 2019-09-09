@@ -33,10 +33,13 @@ export default class VisualRegressionLauncher {
   async before(capabilities, specs) {
     this.validateConfig(browser.options);
 
-    this.compare = browser.options.visualRegression.compare;
-    this.viewportChangePause = _.get(browser.options, 'visualRegression.viewportChangePause', 100);
-    this.viewports = _.get(browser.options, 'visualRegression.viewports');
-    this.orientations = _.get(browser.options, 'visualRegression.orientations');
+    const visualRegressionConfig = browser.options.visualRegression;
+
+    // this.compare = browser.options.visualRegression.compare;
+    this.compare = visualRegressionConfig.compare;
+    this.viewportChangePause = visualRegressionConfig.viewportChangePause || 100;
+    this.viewports = visualRegressionConfig.viewports;
+    this.orientations = visualRegressionConfig.orientations;
     const userAgent = (await browser.execute(getUserAgent)).value;
     const { name, version, ua } = parsePlatform(userAgent);
 
@@ -133,18 +136,23 @@ export default class VisualRegressionLauncher {
 
     const getTestDetails = () => this.getTestDetails();
 
-    const resolutionKeySingle = browser.isMobile ? 'orientation' : 'viewport';
-    const resolutionKeyPlural = browser.isMobile ? 'orientations' : 'viewports';
-    const resolutionMap = browser.isMobile ? mapOrientations : mapViewports;
+    let resolutionKey = 'viewport';
+    let resolutionOptions = options.viewports;
+    let resolutionMap = mapViewports;
+    let resolutionDefault = this.viewports;
 
-    const viewportChangePauseDefault = this.viewportChangePause;
-    const resolutionDefault = browser.isMobile ? this.orientations : this.viewports;
+    if (browser.isMobile) {
+      resolutionKey = 'orientation';
+      resolutionOptions = options.orientations;
+      resolutionMap = mapOrientations;
+      resolutionDefault = this.orientations;
+    }
 
     return async function async(...args) {
       const url = await browser.getUrl();
 
       const elementSelector = type === 'element' ? args[0] : undefined;
-      const options = _.isPlainObject(args[args.length - 1]) ? args[args.length - 1] : {};
+      let options = _.isPlainObject(args[args.length - 1]) ? args[args.length - 1] : {};
 
       const {
         exclude,
@@ -152,22 +160,22 @@ export default class VisualRegressionLauncher {
         remove,
       } = options;
 
-      const resolutions = _.get(options, resolutionKeyPlural, resolutionDefault);
-      const viewportChangePause = _.get(options, 'viewportChangePause', viewportChangePauseDefault);
+      const resolutions = resolutionOptions || resolutionDefault;
+      const viewportChangePause = options.viewportChangePause || this.viewportChangePause;
 
       const results = await resolutionMap(
         browser,
         viewportChangePause,
         resolutions,
         async function takeScreenshot(resolution) {
-          const meta = _.pickBy({
+          const meta = {
             url,
             element: elementSelector,
             exclude,
             hide,
             remove,
-            [resolutionKeySingle]: resolution
-          }, _.identity);
+            [resolutionKey]: resolution
+          };
 
           const screenshotContext = {
             ...baseContext,
@@ -176,19 +184,19 @@ export default class VisualRegressionLauncher {
             options
           };
 
-          const screenshotContextCleaned = _.pickBy(screenshotContext, _.identity);
+          // const screenshotContextCleaned = _.pickBy(screenshotContext, _.identity);
 
-          await runHook('beforeScreenshot', screenshotContextCleaned);
+          await runHook('beforeScreenshot', screenshotContext);
 
           const base64Screenshot = await command(browser, ...args);
 
-          await runHook('afterScreenshot', screenshotContextCleaned, base64Screenshot);
+          await runHook('afterScreenshot', screenshotContext, base64Screenshot);
 
           // pass the following params to next iteratee function
-          return [screenshotContextCleaned, base64Screenshot];
+          return [screenshotContext, base64Screenshot];
         },
-        async function processScreenshot(screenshotContextCleaned, base64Screenshot) {
-          return await runHook('processScreenshot', screenshotContextCleaned, base64Screenshot);
+        async function processScreenshot(screenshotContext, base64Screenshot) {
+          return await runHook('processScreenshot', screenshotContext, base64Screenshot);
         }
       );
       return results;
@@ -197,9 +205,9 @@ export default class VisualRegressionLauncher {
   }
 
   getTestDetails() {
-    return _.pickBy({
+    return {
      suite: this.currentSuite,
      test: this.currentTest,
-    }, _.identity);
+    };
   }
 }

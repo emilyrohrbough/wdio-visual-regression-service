@@ -130,6 +130,7 @@ export default class BaseCompare {
     const {
       misMatchPercentage, isWithinMisMatchTolerance, isSameDimensions, referenceExists
     } = resultResport;
+
     return {
       misMatchPercentage,
       isExactSameImage: (misMatchPercentage === 0 && isSameDimensions),
@@ -138,5 +139,4 @@ export default class BaseCompare {
       isWithinMisMatchTolerance: (isWithinMisMatchTolerance && isSameDimensions),
     };
   }
-
 }

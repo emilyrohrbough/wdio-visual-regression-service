@@ -4,7 +4,6 @@
   "description": "Visual regression testing for WebdriverIO",
   "main": "index.js",
   "files": [
-    "index.js",
     "compare.js",
     "launcher.js",
     "*.md",
@@ -23,10 +22,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zinserjan/wdio-visual-regression-service"
+    "url": "https://github.com/terra/wdio-visual-regression-service"
   },
   "bugs": {
-    "url": "https://github.com/zinserjan/wdio-visual-regression-service/issues"
+    "url": "https://github.com/terra/wdio-visual-regression-service/issues"
   },
   "author": "Jan-André Zinser",
   "license": "MIT",

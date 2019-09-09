@@ -6,7 +6,7 @@ var compareMethod = require('./test/helper/compareMethod');
 
 exports.config = {
   specs: [
-    path.join(process.cwd(), 'test', 'wdio', '*.test.js')
+    path.join(process.cwd(), 'test', 'wdio', '*-spec.js')
   ],
   capabilities: [
     {
@@ -14,7 +14,6 @@ exports.config = {
       'phantomjs.binary.path': require('phantomjs').path,
     }
   ],
-  sync: false,
   logLevel: 'silent',
   coloredLogs: true,
 
@@ -34,7 +33,7 @@ exports.config = {
   },
   services: [
     'selenium-standalone',
-    require('./lib')
+    require('./index')
   ],
   visualRegression: {
     compare: compareMethod,
